@@ -6,12 +6,15 @@ class Player:
         self.character.fill("red")
         self.characterRect = self.character.get_rect(center = pos)
 
+        self.newPos = pygame.math.Vector2(pos)
         self.direction = pygame.math.Vector2()
         self.speed = 300
 
+    def getPlayerPos(self):
+        return self.newPos
+
     def movement(self):
         keys = pygame.key.get_pressed()
-
         if(keys[pygame.K_w]):
             self.direction.y = -1
         elif(keys[pygame.K_s]):
@@ -30,8 +33,8 @@ class Player:
             self.direction = self.direction.normalize()
         
         movement = self.direction * self.speed * dt
-        new_pos = pygame.math.Vector2(self.characterRect.center) + movement
-        self.characterRect.center = (round(new_pos.x),round(new_pos.y))
+        self.new_pos = pygame.math.Vector2(self.characterRect.center) + movement
+        self.characterRect.center = (round(self.new_pos.x),round(self.new_pos.y))
 
     def display(self, screen, dt):
         self.movement()
