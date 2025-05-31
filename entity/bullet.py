@@ -3,7 +3,7 @@ import pygame
 class Bullet:
     def __init__(self, pos, target_pos):
         self.bullet = pygame.Surface((10,10))
-        self.bullet.fill("blue")
+        self.bullet.fill("yellow")
         self.bulletRect = self.bullet.get_rect(center = pos)
 
         direction_vector = pygame.math.Vector2(target_pos) - pygame.math.Vector2(pos)
@@ -20,6 +20,7 @@ class Bullet:
         
     def is_offscreen(self, screen_width, screen_height):
         return not self.bulletRect.colliderect(pygame.Rect(0, 0, screen_width, screen_height))
+    
     def display(self, screen):
         screen.blit(self.bullet, self.bulletRect)
     
