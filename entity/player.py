@@ -2,16 +2,17 @@ import pygame
 
 class Player:
     def __init__(self,pos):
+        self.displaySurface = pygame.display.get_surface()
+
         self.character = pygame.Surface((50, 50))
         self.character.fill("red")
         self.characterRect = self.character.get_rect(center = pos)
-
-        self.newPos = pygame.math.Vector2(pos)
+        # self.newPos = pygame.math.Vector2(pos)
         self.direction = pygame.math.Vector2()
-        self.speed = 300
+        self.speed = 5
 
-    def getPlayerPos(self):
-        return self.newPos
+    # def getPlayerPos(self):
+    #     return self.newPos
 
     def movement(self):
         keys = pygame.key.get_pressed()
@@ -28,15 +29,14 @@ class Player:
         else:
             self.direction.x = 0
     
-    def update(self, dt):
-        if(self.direction.length() != 0):
-            self.direction = self.direction.normalize()
-        
-        movement = self.direction * self.speed * dt
-        self.new_pos = pygame.math.Vector2(self.characterRect.center) + movement
-        self.characterRect.center = (round(self.new_pos.x),round(self.new_pos.y))
-
-    def display(self, screen, dt):
+    def update(self):
         self.movement()
-        self.update(dt)
-        screen.blit(self.character, self.characterRect)
+        self.characterRect.center += self.direction * self.speed
+
+
+    def display(self,offset):
+        # self.movement()
+        self.update()
+        off_set = self.characterRect.topleft - offset
+        print(f"Direction: {off_set}, Position: {self.characterRect.center}") # but here its correctly divided
+        self.displaySurface.blit(self.character, off_set)

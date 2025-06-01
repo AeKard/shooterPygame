@@ -2,6 +2,7 @@ import pygame
 
 class Bullet:
     def __init__(self, pos, target_pos):
+        self.displaySurface = pygame.display.get_surface()
         self.bullet = pygame.Surface((10,10))
         self.bullet.fill("yellow")
         self.bulletRect = self.bullet.get_rect(center = pos)
@@ -18,9 +19,10 @@ class Bullet:
         movement = self.direction * self.speed * dt
         self.bulletRect.center += movement
         
-    def is_offscreen(self, screen_width, screen_height):
-        return not self.bulletRect.colliderect(pygame.Rect(0, 0, screen_width, screen_height))
+    def is_offscreen(self, offset , screen_width, screen_height):
+        return not self.bulletRect.colliderect(pygame.Rect(offset.x, offset.y, screen_width, screen_height))
     
-    def display(self, screen):
-        screen.blit(self.bullet, self.bulletRect)
+    def display(self,offset):
+        off_set = self.bulletRect.center - offset
+        self.displaySurface.blit(self.bullet, off_set)
     

@@ -7,12 +7,12 @@ class BulletManager:
     def spawnBullet(self, pos, targerPos):
         self.bullets.append(Bullet(pos, targerPos))
     
-    def update(self, dt, screen_width, screen_height):
+    def update(self, dt, offset, screen_width, screen_height):
         for bullet in self.bullets[:]:
             bullet.update(dt)
-            if bullet.is_offscreen(screen_width, screen_height): 
+            if bullet.is_offscreen(offset, screen_width, screen_height): 
                     self.bullets.remove(bullet)
 
-    def draw(self, screen):
+    def draw(self, offset):
         for bullet in self.bullets:
-            bullet.display(screen)
+            bullet.display(offset)
