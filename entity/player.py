@@ -11,6 +11,7 @@ class Player:
         self.direction = pygame.math.Vector2()
         self.speed = 5
 
+        self.health = 3
     # def getPlayerPos(self):
     #     return self.newPos
 
@@ -33,10 +34,12 @@ class Player:
         self.movement()
         self.characterRect.center += self.direction * self.speed
 
+    def takeDamage(self):
+        self.health -= 1
 
     def display(self,offset):
         # self.movement()
         self.update()
         off_set = self.characterRect.topleft - offset
-        print(f"Direction: {off_set}, Position: {self.characterRect.center}") # but here its correctly divided
+        # print(f"Direction: {off_set}, Position: {self.characterRect.center}") # but here its correctly divided
         self.displaySurface.blit(self.character, off_set)
