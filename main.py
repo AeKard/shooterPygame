@@ -1,38 +1,47 @@
 import pygame
 from random import randint
 
+from setting import *
 from bulletManager import BulletManager
 from entity.player import Player
 from entity.enemy import Enemy
 from camera import Camera
 from ui import PlayerUI
+from levelManager import LevelManager
 """
     TODO: CONE SHAPE RANDOM BULLET SPREAD
     TODO: UI TIME !!!
 
+    
+    About this game is protecting the center using powerups
 """
 class Main():
     def __init__(self):
         pygame.init()      
-        self.WINDOW_WIDTH, self.WINDOW_HEIGHT = 1080, 720
 
-        self.screen = pygame.display.set_mode((self.WINDOW_WIDTH, self.WINDOW_HEIGHT))
+        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         self.clock = pygame.time.Clock()
         self.running = True
         
         # Initialzie Object
-        self.player = Player((self.WINDOW_WIDTH // 2, self.WINDOW_HEIGHT // 2))
+        self.player = Player((WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
         self.playerUi = PlayerUI((10, 10))
         self.bullets = BulletManager()
         
+        self.level = LevelManager()
         self.enemies = []
         self.camera = Camera()
-        # random place
-        for i in range(20):
-            x = randint(-100, self.WINDOW_WIDTH + 100)   
-            y = randint(-100, self.WINDOW_HEIGHT + 100)
-            self.enemies.append(Enemy((x,y)))
+        # Enenmy random place
+        for i in range(500):
+            while True:
+                x = randint(-100, 1400)
+                y = randint(-500, 1500)
+                spawn_rect = pygame.Rect(x, y, 50, 50) 
+                if not self.level.restrictedAreaSpawn.colliderect(spawn_rect):
+                    break 
+            self.enemies.append(Enemy((x, y)))
         
+            
         self.fire_rate = 0.2 
         self.time_since_last_shot = 0
         self.time_since_damage = 0.1
@@ -47,7 +56,11 @@ class Main():
                 if event.type == pygame.QUIT:
 
                     self.running = False
+            # map checks if collide
 
+
+
+            # GameSetup ---
             if pygame.mouse.get_pressed()[0]: 
                 if self.time_since_last_shot >= self.fire_rate:
                     mouse_pos = pygame.mouse.get_pos() + self.camera.offset
@@ -55,19 +68,25 @@ class Main():
                     self.bullets.spawnBullet(player_pos, mouse_pos)
                     self.time_since_last_shot = 0  
 
-            self.bullets.update(dt,self.camera.offset, self.WINDOW_WIDTH , self.WINDOW_HEIGHT)
-
+            self.bullets.update(dt,self.camera.offset, WINDOW_WIDTH, WINDOW_HEIGHT)
 
             #Enemy bullet collider 
             for bullet in self.bullets.bullets[:]:
+                if bullet.bulletRect.colliderect(self.level.vWallRect):
+                    self.bullets.bullets.remove(bullet)
+                    break
                 for enemy in self.enemies[:]:
                     if bullet.bulletRect.colliderect(enemy.enemyRect):
                         self.bullets.bullets.remove(bullet)
                         self.enemies.remove(enemy)
                         #---
-                        x = randint(100, self.WINDOW_WIDTH - 100)   
-                        y = randint(100, self.WINDOW_HEIGHT - 100)
-                        self.enemies.append(Enemy((x,y)))
+                        while True:
+                            x = randint(-100, 1400)
+                            y = randint(-500, 1500)
+                            spawn_rect = pygame.Rect(x, y, 50, 50) 
+                            if not self.level.restrictedAreaSpawn.colliderect(spawn_rect):
+                                break 
+                        self.enemies.append(Enemy((x, y)))
                         break
             #playertakedamage
             for enemy in self.enemies[:]:
@@ -80,8 +99,13 @@ class Main():
                 self.time_since_last_shot = 0
             # DIPLAY ALaL OBJECT
             self.screen.fill("black")
-
+            self.level.displayLevel(self.camera.offset)
+            # map display
+            # for i in range(20):
+                
+            # CHECKS IF in the view port
             self.camera.display_objects(self.enemies, self.bullets, self.player, self.playerUi)
+            #
             pygame.display.flip()
         
         pygame.quit()
