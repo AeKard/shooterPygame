@@ -7,8 +7,10 @@ class Enemy:
         self.displaySurface = pygame.display.get_surface()
         self.enemy = pygame.Surface((50, 50))
         self.enemy.fill("blue")
-        self.enemyRect = self.enemy.get_rect(center = pos)
-
+        self.enemyRect = self.enemy.get_rect(topleft = pos)
+        #Health of the Enemy
+    def spawnEnemy(): # put the logic of spawing here
+        pass 
     def display(self, offset):
         # print(self.enemyRect.x,self.enemyRect.y)
         off_set = self.enemyRect.topleft - offset

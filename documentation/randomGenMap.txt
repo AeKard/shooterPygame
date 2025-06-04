@@ -1,0 +1,28 @@
+I want to create random gen!
+
+in what way? 
+
+using array or tile_map = [1,0]
+1 wall
+0 emptyspace
+
+each on has a size of 10 so its scalable to any 10th number "I think 10th?"
+x = 2000, y = 1500 is always the size of the playable area 200, and 150 is the size of walls needed to fill the area
+-> -> -> scaled to 200, 150 each tile
+ 1, 1, 1
+
+I can do random gen by setting up condition for the walls and empty spaces and use random walk algo to carve a path
+
+"For now"
+- For each tile in the grid:
+    - If the tile is on the edge (first or last row/column), set it to 1 (wall)
+    - Else, set it to 0 (empty)
+
+for y in range(rows):
+    row = []
+    for x in range(columns):
+        if x == 0 or x == columns - 1 or y == 0 or y == rows - 1:
+            row.append(1)  # Outer border wall
+        else:
+            row.append(0)  # Empty space
+    tile_map.append(row)

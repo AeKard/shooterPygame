@@ -1,11 +1,13 @@
 import pygame
 
 class Camera:
-    def __init__(self):
+    def __init__(self, player):
         self.displaySurface = pygame.display.get_surface()
+
         self.offset = pygame.math.Vector2()
         self.half_w = self.displaySurface.get_size()[0] // 2
         self.half_h = self.displaySurface.get_size()[1] // 2
+
         self.viewport_rect = pygame.Rect(
            self.offset.x,
            self.offset.y,
@@ -17,22 +19,15 @@ class Camera:
         self.offset.x = target.characterRect.centerx - self.half_w
         self.offset.y = target.characterRect.centery - self.half_h
 
-    # check if outside of the viewport 
-
     def display_objects(self, enemies, bullets, player, playerUi):
         #updates the viewport offset
-        self.viewport_rect[0] = self.offset.x
-        self.viewport_rect[1] = self.offset.y
-
-        
-
-        # print(self.viewport_rect) # viewport update
-        self.center_target_camera(player)
+        self.viewport_rect.topleft = self.offset
         # self.displaySurface.blit(player.character, player.characterRect)
+        self.center_target_camera(player)
         player.display(self.offset)
         bullets.draw(self.offset)
-        # print(self.offset.x , self.offset.y)
-
+        # print(player.characterRect)
+        
         #display enemies if in the viewport
         for enemy in enemies:
             if self.viewport_rect.colliderect(enemy.enemyRect):

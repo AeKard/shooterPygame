@@ -1,17 +1,17 @@
 import pygame
-from random import randint
 
 from setting import *
 from bulletManager import BulletManager
 from entity.player import Player
-from entity.enemy import Enemy
+
 from camera import Camera
 from ui import PlayerUI
-from levelManager import LevelManager
+from levelManager import LevelManager 
 """
     TODO: CONE SHAPE RANDOM BULLET SPREAD
-    TODO: UI TIME !!!
-
+    TODO: UI TIME Health and bullet reload
+    FIXME: do the tile Area 
+         : fix the setting, setup for easy navigation 
     
     About this game is protecting the center using powerups
 """
@@ -28,20 +28,11 @@ class Main():
         self.playerUi = PlayerUI((10, 10))
         self.bullets = BulletManager()
         
-        self.level = LevelManager()
-        self.enemies = []
-        self.camera = Camera()
-        # Enenmy random place
-        for i in range(500):
-            while True:
-                x = randint(-100, 1400)
-                y = randint(-500, 1500)
-                spawn_rect = pygame.Rect(x, y, 50, 50) 
-                if not self.level.restrictedAreaSpawn.colliderect(spawn_rect):
-                    break 
-            self.enemies.append(Enemy((x, y)))
-        
-            
+        self.camera = Camera(self.player)
+        self.enemySpawnArea = pygame.math.Vector2((1500, 2000))
+        self.level = LevelManager((WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2), self.enemySpawnArea)
+        self.enemies = self.level.setupEnemy()
+
         self.fire_rate = 0.2 
         self.time_since_last_shot = 0
         self.time_since_damage = 0.1
@@ -54,11 +45,10 @@ class Main():
             self.time_since_damage += dt
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-
                     self.running = False
             # map checks if collide
-
-
+            
+            #CENTER THE PLAYER CAMERS
 
             # GameSetup ---
             if pygame.mouse.get_pressed()[0]: 
@@ -72,21 +62,18 @@ class Main():
 
             #Enemy bullet collider 
             for bullet in self.bullets.bullets[:]:
-                if bullet.bulletRect.colliderect(self.level.vWallRect):
-                    self.bullets.bullets.remove(bullet)
-                    break
                 for enemy in self.enemies[:]:
                     if bullet.bulletRect.colliderect(enemy.enemyRect):
                         self.bullets.bullets.remove(bullet)
                         self.enemies.remove(enemy)
                         #---
-                        while True:
-                            x = randint(-100, 1400)
-                            y = randint(-500, 1500)
-                            spawn_rect = pygame.Rect(x, y, 50, 50) 
-                            if not self.level.restrictedAreaSpawn.colliderect(spawn_rect):
-                                break 
-                        self.enemies.append(Enemy((x, y)))
+                        # while True:
+                        #     x = randint(-100, 1400)
+                        #     y = randint(-500, 1500)
+                        #     spawn_rect = pygame.Rect(x, y, 50, 50) 
+                        #     if not self.level.restrictedAreaSpawn.colliderect(spawn_rect):
+                        #         break 
+                        # self.enemies.append(Enemy((x, y)))
                         break
             #playertakedamage
             for enemy in self.enemies[:]:
@@ -99,13 +86,9 @@ class Main():
                 self.time_since_last_shot = 0
             # DIPLAY ALaL OBJECT
             self.screen.fill("black")
-            self.level.displayLevel(self.camera.offset)
-            # map display
-            # for i in range(20):
-                
-            # CHECKS IF in the view port
+            self.level.displayLevel(self.camera.offset, self.camera.viewport_rect)
+            # Display Objects
             self.camera.display_objects(self.enemies, self.bullets, self.player, self.playerUi)
-            #
             pygame.display.flip()
         
         pygame.quit()

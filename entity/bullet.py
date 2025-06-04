@@ -23,6 +23,5 @@ class Bullet:
         return not self.bulletRect.colliderect(pygame.Rect(offset.x, offset.y, screen_width, screen_height))
     
     def display(self,offset):
-        off_set = self.bulletRect.center - offset
-        self.displaySurface.blit(self.bullet, off_set)
+        self.displaySurface.blit(self.bullet, self.bulletRect.topleft - offset)
     
