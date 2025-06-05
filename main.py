@@ -22,13 +22,12 @@ class Main():
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
         self.clock = pygame.time.Clock()
         self.running = True
-        
         # Initialzie Object
         self.player = Player((WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
         self.playerUi = PlayerUI((10, 10))
         self.bullets = BulletManager()
         
-        self.camera = Camera(self.player)
+        self.camera = Camera()
         self.enemySpawnArea = pygame.math.Vector2((1500, 2000))
         self.level = LevelManager((WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2), self.enemySpawnArea)
         self.enemies = self.level.setupEnemy()
@@ -43,13 +42,11 @@ class Main():
             dt = self.clock.tick(60) / 1000  
             self.time_since_last_shot += dt  
             self.time_since_damage += dt
+            print(round(self.clock.get_fps()))
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
-            # map checks if collide
-            
-            #CENTER THE PLAYER CAMERS
-
             # GameSetup ---
             if pygame.mouse.get_pressed()[0]: 
                 if self.time_since_last_shot >= self.fire_rate:
@@ -88,7 +85,7 @@ class Main():
             self.screen.fill("black")
             self.level.displayLevel(self.camera.offset, self.camera.viewport_rect)
             # Display Objects
-            self.camera.display_objects(self.enemies, self.bullets, self.player, self.playerUi)
+            self.camera.display_objects(self.enemies, self.bullets, self.player, self.playerUi, self.level.tileWalls, dt)
             pygame.display.flip()
         
         pygame.quit()

@@ -1,7 +1,7 @@
 import pygame
 
 class Camera:
-    def __init__(self, player):
+    def __init__(self):
         self.displaySurface = pygame.display.get_surface()
 
         self.offset = pygame.math.Vector2()
@@ -19,19 +19,19 @@ class Camera:
         self.offset.x = target.characterRect.centerx - self.half_w
         self.offset.y = target.characterRect.centery - self.half_h
 
-    def display_objects(self, enemies, bullets, player, playerUi):
+    def display_objects(self, enemies, bullets, player, playerUi,levelWalls,dt):
         #updates the viewport offset
+        self.center_target_camera(player)
         self.viewport_rect.topleft = self.offset
         # self.displaySurface.blit(player.character, player.characterRect)
-        self.center_target_camera(player)
-        player.display(self.offset)
+        player.display(self.offset, levelWalls, dt)
         bullets.draw(self.offset)
         # print(player.characterRect)
         
         #display enemies if in the viewport
         for enemy in enemies:
+            enemy.enemyMovement(player.characterRect.center, dt, enemies, levelWalls)
             if self.viewport_rect.colliderect(enemy.enemyRect):
-                # print(enemy)
                 enemy.display(self.offset)
         #diplay health
         margin = pygame.math.Vector2()
